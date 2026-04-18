@@ -2,6 +2,7 @@ import uuid
 import json
 from datetime import datetime, timedelta
 
+
 def create_session(r, user_id, movie_id, seat_id):
     session_id = str(uuid.uuid4())
     session_key = f"session:{session_id}"
@@ -15,18 +16,20 @@ def create_session(r, user_id, movie_id, seat_id):
         "movie_id": movie_id,
         "seat_id": seat_id,
         "expires_at": expires_at.isoformat(),
-        "status": "locked"
+        "status": "locked",
     }
 
     r.set(session_key, json.dumps(session_data), ex=300)
     r.set(user_session_key, session_id, ex=300)
     return session_data
 
+
 def get_session_by_id(r, session_id):
     raw = r.get(f"session:{session_id}")
     if not raw:
         return None
     return json.loads(raw)
+
 
 def get_session_by_user(r, user_id):
     session_id = r.get(f"user:{user_id}:session")
@@ -38,6 +41,7 @@ def get_session_by_user(r, user_id):
         return None
 
     return json.loads(raw)
+
 
 def get_session(r, user_id, session_id):
     raw = r.get(f"session:{session_id}")

@@ -1,13 +1,13 @@
 import json
 import redis
-import seats_service 
+import seats_service
 from config import redis_config
 
-seats_data = {
-    "movie_2": {
-        "A1": {"seat_id": "A1", "confirmed": True, "booked": True, "user_id": "u1"},
-    }
-}
+seats_data = {}
+
+# "movie_2": {
+#     "A1": {"seat_id": "A1", "confirmed": True, "booked": True, "user_id": "u1"},
+# }
 
 movies_data = {
     "movie_1": {
@@ -24,8 +24,10 @@ movies_data = {
     },
 }
 
+
 def get_redis():
     return redis.Redis(**redis_config)
+
 
 def generate_all_seats(movie_id, rows, seats_per_row, booked_data):
     seats = {}
@@ -36,11 +38,7 @@ def generate_all_seats(movie_id, rows, seats_per_row, booked_data):
             seat_id = f"{row_char}{c}"
 
             # default seat
-            seats[seat_id] = {
-                "seat_id": seat_id,
-                "booked": False,
-                "user_id": None
-            }
+            seats[seat_id] = {"seat_id": seat_id, "booked": False, "user_id": None}
 
     # override booked seats
     if movie_id in booked_data:
@@ -48,6 +46,7 @@ def generate_all_seats(movie_id, rows, seats_per_row, booked_data):
             seats[seat_id] = data
 
     return seats
+
 
 if __name__ == "__main__":
     r = get_redis()
@@ -58,10 +57,7 @@ if __name__ == "__main__":
 
         # generate full seat map
         seats = generate_all_seats(
-            movie_id,
-            data["rows"],
-            data["seats_per_row"],
-            seats_data
+            movie_id, data["rows"], data["seats_per_row"], seats_data
         )
 
         # store all seats

@@ -1,5 +1,6 @@
 import json
 
+
 def add_seat(r, movie_id, seat_id, data):
     seat_key = f"seat:{movie_id}:{seat_id}"
     seats_set_key = f"movie:{movie_id}:seats"
@@ -9,6 +10,7 @@ def add_seat(r, movie_id, seat_id, data):
 
     # add to index
     r.sadd(seats_set_key, seat_id)
+
 
 def get_all_seats(r, movie_id):
     seat_ids = r.smembers(f"movie:{movie_id}:seats")
@@ -22,10 +24,11 @@ def get_all_seats(r, movie_id):
         if lock:
             seat["booked"] = True
             seat["user_id"] = lock
-        
+
         seats.append(seat)
 
     return seats
+
 
 def lock_seat(r, movie_id, seat_id, user_id):
     seat_key = f"seat:{movie_id}:{seat_id}"
@@ -39,8 +42,9 @@ def lock_seat(r, movie_id, seat_id, user_id):
 
     if seat.get("booked"):
         return False
-    
+
     return r.set(lock_key, user_id, ex=300, nx=True)
+
 
 def confirm_seat(r, movie_id, seat_id, user_id):
     lock_key = f"lock:{movie_id}:{seat_id}"
@@ -69,6 +73,7 @@ def confirm_seat(r, movie_id, seat_id, user_id):
 
     return True
 
+
 def release_seat(r, movie_id, seat_id, user_id):
     lock_key = f"lock:{movie_id}:{seat_id}"
 
@@ -78,6 +83,7 @@ def release_seat(r, movie_id, seat_id, user_id):
 
     r.delete(lock_key)
     return True
+
 
 # def update_seat(r, movie_id, seat_id, updates: dict):
 #     seat_key = f"seat:{movie_id}:{seat_id}"

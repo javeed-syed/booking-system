@@ -49,7 +49,7 @@ def start_session(movie_id, seat_id):
         session_data = create_session(r, user_id, movie_id, seat_id)
         return jsonify(session_data)
 
-    return jsonify({"status": False})
+    return jsonify({"status": False}), 409
 
 
 @app.route("/sessions/<session_id>/confirm", methods=["PUT"])
@@ -62,10 +62,13 @@ def confirm_seat_route(session_id):
 
     if not session:
         return jsonify({"message": "Session not found."}), 401
-    
-    confirm_seat(r, session.get('movie_id'), session.get('seat_id'), session.get('user_id'))
+
+    confirm_seat(
+        r, session.get("movie_id"), session.get("seat_id"), session.get("user_id")
+    )
 
     return jsonify({"success": True})
+
 
 @app.route("/sessions/<session_id>", methods=["DELETE"])
 def delete_seat_route(session_id):
@@ -77,8 +80,10 @@ def delete_seat_route(session_id):
 
     if not session:
         return jsonify({"message": "Session not found."})
-    
-    release_seat(r, session.get('movie_id'), session.get('seat_id'), session.get('user_id'))
+
+    release_seat(
+        r, session.get("movie_id"), session.get("seat_id"), session.get("user_id")
+    )
 
     return jsonify({"success": True})
 
