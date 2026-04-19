@@ -1,13 +1,16 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, app, render_template, jsonify, request
 
 import json
 
-from redis_util import get_redis
-from seats_service import get_all_seats, lock_seat, confirm_seat, release_seat
-from session_service import create_session, get_session
+from extensions import get_db, get_redis, init_app
+from repositories.movie_repo import get_movies_from_db
+from services.seats_service import get_all_seats, lock_seat, confirm_seat, release_seat
+from services.session_service import create_session, get_session
+from models.init import init_db
 
 app = Flask(__name__)
-
+init_app(app)
+init_db()
 
 @app.route("/")
 def home():
@@ -16,16 +19,8 @@ def home():
 
 @app.route("/movies")
 def get_movies():
-    r = get_redis()
-    movies_data = r.hgetall("movies")
-
-    movies = []
-
-    for movie_id, data in movies_data.items():  # type: ignore
-        data = json.loads(data)
-
-        movies.append({"movie_id": movie_id, **data})
-
+    db = get_db()
+    movies = get_movies_from_db(db)
     return jsonify(movies)
 
 

@@ -1,5 +1,8 @@
 import json
 
+from extensions import get_db
+from repositories.seat_repo import load_seats_to_redis
+
 
 def add_seat(r, movie_id, seat_id, data):
     seat_key = f"seat:{movie_id}:{seat_id}"
@@ -13,6 +16,12 @@ def add_seat(r, movie_id, seat_id, data):
 
 
 def get_all_seats(r, movie_id):
+    seats_exists = r.exists(f"movie:{movie_id}:seats")
+    
+    if not seats_exists:
+        db = get_db()
+        load_seats_to_redis(r, db, movie_id)
+
     seat_ids = r.smembers(f"movie:{movie_id}:seats")
 
     seats = []
