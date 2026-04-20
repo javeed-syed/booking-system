@@ -1,10 +1,7 @@
-from sqlalchemy import Column, String, DateTime, Index
-from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy.orm import declarative_base
+from sqlalchemy import Column, String, DateTime, Index, JSON
+from extensions import Base
 from uuid import uuid4
 from datetime import datetime
-
-Base = declarative_base()
 
 
 class Booking(Base):
@@ -15,7 +12,7 @@ class Booking(Base):
 
     movie_id = Column(String, nullable=False, index=True)  # critical index
 
-    seats = Column(JSONB, nullable=False)  # ["A1","A2"]
+    seats = Column(JSON, nullable=False)  # ["A1","A2"]
 
     payment_id = Column(String, nullable=False)
 

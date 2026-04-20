@@ -16,7 +16,7 @@ def generate_all_seats(movie_id, rows, seats_per_row, booked_data):
             seat_id = f"{row_char}{c}"
 
             # default seat
-            seats[seat_id] = {"seat_id": seat_id, "booked": False, "user_id": None}
+            seats[seat_id] = {"seat_id": seat_id, "booked": False, "confirmed": False, "user_id": None}
 
     # override booked seats
     if movie_id in booked_data:

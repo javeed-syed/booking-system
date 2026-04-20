@@ -42,11 +42,9 @@ def close_db(e=None):
 def get_redis():
     if "redis" not in g:
         g.redis = redis.Redis(
-            decode_responses=True,  # avoid bytes handling
             **redis_config
         )
     return g.redis
-
 
 def close_redis(e=None):
     r = g.pop("redis", None)
@@ -55,7 +53,6 @@ def close_redis(e=None):
             r.close()   # safe for redis-py >=4
         except Exception:
             pass
-
 
 # --- Flask app init hook ---
 def init_app(app):

@@ -1,21 +1,102 @@
-from repositories.booking_repo import get_booked_seats
-from services import seats_service
-from utils import generate_all_seats
-from data import movies_data
+import json
 
-def add_seats_to_redis(r, seats_data = None):
-    for movie_id, data in movies_data.items():
+# redis
 
-        seats = generate_all_seats(
-            movie_id, data["rows"], data["seats_per_row"], seats_data or {}
-        )
+def add_seat(r, movie_id, seat_id, data):
+    seat_key = f"seat:{movie_id}:{seat_id}"
+    seats_set_key = f"movie:{movie_id}:seats"
 
-        for seat_id, seat_data in seats.items():
-            seats_service.add_seat(r, movie_id, seat_id, seat_data)
+    # store seat
+    r.set(seat_key, json.dumps(data))
 
-def load_seats_to_redis(r, db, movie_id):
-    try:
-        seats = get_booked_seats(db, movie_id)
-        add_seats_to_redis(r, seats)
-    except Exception as e:
-        print(f"Error loading seats to Redis for movie {movie_id}: {e}")
+    # add to index
+    r.sadd(seats_set_key, seat_id)
+
+def create_lock_seat(r, movie_id, seat_id, user_id):
+    seat_key = f"seat:{movie_id}:{seat_id}"
+    lock_key = f"lock:{movie_id}:{seat_id}"
+
+    raw = r.get(seat_key)
+    if not raw:
+        return False
+
+    seat = json.loads(raw)
+
+    if seat.get("booked"):
+        return False
+
+    return r.set(lock_key, user_id, ex=300, nx=True)
+
+def update_lock_seat_confirm(r, movie_id, seat_id, user_id):
+    lock_key = f"lock:{movie_id}:{seat_id}"
+    seat_key = f"seat:{movie_id}:{seat_id}"
+
+    raw = r.get(seat_key)
+    if not raw:
+        return False
+
+    seat = json.loads(raw)
+
+    # already booked → reject
+    if seat.get("confirmed"):
+        return False
+
+    # validate lock ownership
+    if r.get(lock_key) != user_id:
+        return False
+
+    # update safely
+    seat["confirmed"] = True
+    seat["user_id"] = user_id
+
+    r.set(seat_key, json.dumps(seat))
+    r.delete(lock_key)
+
+    return True
+
+def update_lock_seat_release(r, movie_id, seat_id, user_id):
+    lock_key = f"lock:{movie_id}:{seat_id}"
+
+    # validate lock ownership
+    if r.get(lock_key) != user_id:
+        return False
+
+    r.delete(lock_key)
+    return True
+
+def update_seat(r, movie_id, seat_id, updates: dict):
+    seat_key = f"seat:{movie_id}:{seat_id}"
+
+    raw = r.get(seat_key)
+    if not raw:
+        return False  # seat doesn't exist
+
+    seat = json.loads(raw)
+
+    # merge updates
+    seat.update(updates)
+
+    r.set(seat_key, json.dumps(seat))
+    return True
+
+def movie_seats_exists(r, movie_id):
+    seats_set_key = f"movie:{movie_id}:seats"
+    return r.exists(seats_set_key)
+
+def get_movie_seats(r, movie_id):
+
+    seat_ids = r.smembers(f"movie:{movie_id}:seats")
+
+    seats = []
+    for seat_id in seat_ids:
+        seat = json.loads(r.get(f"seat:{movie_id}:{seat_id}"))
+
+        lock = r.get(f"lock:{movie_id}:{seat_id}")
+
+        if lock:
+            seat["booked"] = True
+            seat["user_id"] = lock
+
+        seats.append(seat)
+
+    return seats
