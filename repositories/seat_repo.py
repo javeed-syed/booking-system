@@ -27,6 +27,10 @@ def create_lock_seat(r, movie_id, seat_id, user_id):
 
     return r.set(lock_key, user_id, ex=300, nx=True)
 
+def validate_lock(r, movie_id, seat_id, user_id):
+    lock_key = f"lock:{movie_id}:{seat_id}"
+    return r.get(lock_key) == user_id
+
 def update_lock_seat_confirm(r, movie_id, seat_id, user_id):
     lock_key = f"lock:{movie_id}:{seat_id}"
     seat_key = f"seat:{movie_id}:{seat_id}"
@@ -39,10 +43,6 @@ def update_lock_seat_confirm(r, movie_id, seat_id, user_id):
 
     # already booked → reject
     if seat.get("confirmed"):
-        return False
-
-    # validate lock ownership
-    if r.get(lock_key) != user_id:
         return False
 
     # update safely

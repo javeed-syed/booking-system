@@ -1,8 +1,9 @@
 import json
 
 from extensions import get_db, get_redis
-from repositories.seat_repo import get_movie_seats, movie_seats_exists, add_seat, create_lock_seat, update_lock_seat_confirm, update_lock_seat_release
-from repositories.booking_repo import get_booked_seats
+from repositories.producer_repo import produce_event_to_stream
+from repositories.seat_repo import get_movie_seats, movie_seats_exists, add_seat, create_lock_seat, update_lock_seat_confirm, update_lock_seat_release, validate_lock
+from repositories.booking_repo import create_booking, get_booked_seats
 from utils import generate_all_seats
 from data import movies_data
 
@@ -38,7 +39,10 @@ def lock_seat(movie_id, seat_id, user_id):
 
 def confirm_seat(movie_id, seat_id, user_id):
     r = get_redis()
-    return update_lock_seat_confirm(r, movie_id, seat_id, user_id)
+    db = get_db()
+    validate_lock(r, movie_id, seat_id, user_id)
+    create_booking(db, user_id, movie_id, [seat_id])
+    update_lock_seat_confirm(r, movie_id, seat_id, user_id)
 
 def release_seat(movie_id, seat_id, user_id):
     r = get_redis()

@@ -15,6 +15,14 @@ This application allows users to browse movies, view available seats, and book s
 - Release held seats if booking is cancelled
 - Real-time seat availability updates
 
+## Todo
+- Release seat on failure
+- Add async booking processing using redis streams
+- Add auth
+- Add payment service
+- Restore saved sessions
+- Update UI
+
 ## Prerequisites
 
 - Python 3.11+

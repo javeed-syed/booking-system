@@ -14,7 +14,7 @@ class Booking(Base):
 
     seats = Column(JSON, nullable=False)  # ["A1","A2"]
 
-    payment_id = Column(String, nullable=False)
+    payment_id = Column(String, nullable=True) 
 
     status = Column(String, nullable=False, index=True)  # confirmed/failed
 
