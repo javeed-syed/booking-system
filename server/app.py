@@ -1,20 +1,49 @@
-from flask import Flask, app, render_template, jsonify, request
-
-import json
+from flask import Flask, app, jsonify, request, redirect
 
 from extensions import init_app
 from services.session_service import create_session, get_session
 from services.seats_service import get_all_seats, lock_seat, confirm_seat, release_seat
 from services.movies_service import get_all_movies
 from models.init import init_db
+from config import OAUTH_HOST
+from oauth import init_oauth
+from flask_jwt_extended import create_access_token, jwt_required
 
 app = Flask(__name__)
+google = init_oauth(app)
 init_app(app)
 init_db()
 
+
 @app.route("/")
 def home():
-    return render_template("index.html")
+    return f"App is running healthly."
+
+@app.route("/login")
+def login():
+    redirect_uri = f"{OAUTH_HOST}/login/callback"
+
+    return google.authorize_redirect(redirect_uri)
+
+@app.route("/login/callback")
+def callback():
+    token = google.authorize_access_token()
+
+    user = token['userinfo']
+
+    jwt_token = create_access_token(
+        identity=user["email"]
+    )
+
+    return redirect(
+        f"{OAUTH_HOST}/auth-success?token={jwt_token}"
+        
+    )
+
+@app.route("/profile")
+@jwt_required()
+def profile():
+    return {"message": "protected"}
 
 @app.route("/movies")
 def get_movies():
