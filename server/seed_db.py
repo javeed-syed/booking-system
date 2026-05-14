@@ -20,7 +20,7 @@ def seed_movies_to_db():
             movie.title = data["title"]
             movie.rows = data["rows"]
             movie.seats_per_row = data["seats_per_row"]
-            movie.image_url = data["img_url"]
+            movie.backdrop_path = data["backdrop_path"]
 
         db.commit()
     finally:

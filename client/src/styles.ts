@@ -80,18 +80,79 @@ const STYLES = `
   .cb-step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--gold); color: #000; font-size: 0.7rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .cb-step-label { font-size: 0.75rem; font-weight: 600; color: var(--text-2); letter-spacing: 0.08em; text-transform: uppercase; }
 
-  .cb-movies-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 2.5rem; animation: fadeUp 0.4s 0.05s both; }
-  .cb-movie-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.4rem 1.5rem; cursor: pointer; transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1); position: relative; overflow: hidden; }
-  .cb-movie-card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, var(--gold-soft), transparent 60%); opacity: 0; transition: opacity 0.2s; pointer-events: none; }
-  .cb-movie-card:hover { border-color: var(--gold); transform: translateY(-3px); box-shadow: 0 8px 30px rgba(240,165,0,0.15); }
-  .cb-movie-card:hover::before { opacity: 1; }
-  .cb-movie-card.selected { border-color: var(--gold); background: var(--surface-2); box-shadow: 0 0 0 3px var(--gold-glow), var(--shadow-md); }
-  .cb-movie-card.selected::before { opacity: 1; }
-  .cb-movie-poster { width: 48px; height: 48px; border-radius: var(--radius-sm); background: var(--surface-3); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1rem; border: 1px solid var(--border); }
-  .cb-movie-title { font-family: 'Instrument Serif', serif; font-size: 1.15rem; color: var(--text); line-height: 1.3; margin-bottom: 0.4rem; }
-  .cb-movie-meta { font-size: 0.72rem; color: var(--text-3); font-weight: 400; }
-  .cb-movie-badge { position: absolute; top: 1rem; right: 1rem; width: 22px; height: 22px; background: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; opacity: 0; transition: opacity 0.2s; }
+  /* ── Movie grid & cards ── */
+  .cb-movies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+    animation: fadeUp 0.4s 0.05s both;
+  }
+
+  .cb-movie-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .cb-movie-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(240,165,0,0.15);
+  }
+  .cb-movie-card.selected {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px var(--gold-glow), var(--shadow-md);
+  }
+
+  /* Banner (backdrop image or gradient) */
+  .cb-movie-banner {
+    position: relative;
+    width: 100%;
+    height: 130px;
+    flex-shrink: 0;
+    background-size: cover;
+    background-position: center;
+  }
+
+  .cb-movie-badge {
+    position: absolute;
+    top: 0.6rem;
+    right: 0.6rem;
+    width: 22px;
+    height: 22px;
+    background: var(--gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 1;
+  }
   .cb-movie-card.selected .cb-movie-badge { opacity: 1; }
+
+  /* Info section below banner */
+  .cb-movie-info {
+    padding: 0.9rem 1.1rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    background: var(--surface);
+    flex: 1;
+  }
+  .cb-movie-card.selected .cb-movie-info {
+    background: var(--surface-2);
+  }
+
+  .cb-movie-title { font-family: 'Instrument Serif', serif; font-size: 1.05rem; color: var(--text); line-height: 1.3; }
+  .cb-movie-meta { font-size: 0.72rem; color: var(--text-3); font-weight: 400; }
 
   .cb-main { display: grid; grid-template-columns: 1fr 340px; gap: 1.5rem; align-items: start; }
 

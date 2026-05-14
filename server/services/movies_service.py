@@ -9,7 +9,7 @@ def get_all_movies():
         {
             "movie_id": movie.id,
             "title": movie.title,
-            "img_url": movie.image_url,
+            "backdrop_path": movie.backdrop_path,
             "rows": movie.rows,
             "seats_per_row": movie.seats_per_row,
         }

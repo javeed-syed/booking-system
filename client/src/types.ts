@@ -3,6 +3,7 @@ export interface Movie {
   title: string;
   rows: number;
   seats_per_row: number;
+  backdrop_path?: string;
 }
 
 export interface SeatStatus {
@@ -31,4 +32,11 @@ export type StatusType = "success" | "error";
 export interface StatusMsg {
   msg: string;
   type: StatusType;
+}
+
+export interface AuthUser {
+  id: string;
+  name: string;
+  email: string;
+  picture: string;
 }

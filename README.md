@@ -14,14 +14,14 @@ This application allows users to browse movies, view available seats, and book s
 - Confirm seat bookings
 - Release held seats if booking is cancelled
 - Real-time seat availability updates
+- Release seat on failure
+- Add auth
 
 ## Todo
-- Release seat on failure
 - Add async booking processing using redis streams
-- Add auth
 - Add payment service
 - Restore saved sessions
-- Update UI
+- Show user booked tickets
 
 ## Prerequisites
 

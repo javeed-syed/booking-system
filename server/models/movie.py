@@ -7,6 +7,6 @@ class Movie(Base):
 
     id = Column(String, primary_key=True, default=lambda: str(uuid4()))
     title = Column(String, nullable=False)
-    image_url = Column(String, nullable=True)
+    backdrop_path = Column(String, nullable=True)
     rows = Column(Integer, nullable=False, default=5)
     seats_per_row = Column(Integer, nullable=False, default=8)

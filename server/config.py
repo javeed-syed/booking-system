@@ -22,6 +22,8 @@ oauth_config = {
     }
 }
 
-JWT_SECRET_KEY = config.get("JWT_SECRET_KEY", os.urandom(24))
-APP_SECRET_KEY = config.get("APP_SECRET_KEY", os.urandom(24))
-OAUTH_HOST = config.get("OAUTH_HOST", "http://localhost:8000")
+JWT_SECRET_KEY = config.get("JWT_SECRET_KEY")
+APP_SECRET_KEY = config.get("APP_SECRET_KEY")
+BACKEND_URL = config.get("BACKEND_URL", "http://localhost:3000")
+FRONTEND_URL = config.get("FRONTEND_URL", "http://localhost:5173")
+ENV = config.get("ENV", "dev")

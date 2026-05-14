@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useAuth } from "./AuthProvider";
 
 const LOGIN_STYLES = `
@@ -227,41 +227,26 @@ const LOGIN_STYLES = `
     border-top: 1px solid rgba(255,255,255,0.05);
     text-align: center;
     font-size: 0.65rem;
-    color: #3a3530;
+    color: #9d652e;
     line-height: 1.5;
     animation: fadeUp 0.5s 0.35s both;
+  }
+
+  .login-footer-terms {
+    text-decoration: underline;
+    color: white;
+    margin-left: 0.25rem;
   }
 
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(10px); }
     to   { opacity: 1; transform: translateY(0); }
   }
+
 `;
 
 export function LoginPage() {
   const { loginWithGoogle } = useAuth();
-  const googleBtnRef = useRef<HTMLDivElement>(null);
-
-  // Try to render the official Google button inside the container
-  useEffect(() => {
-    const tryRender = () => {
-      if (googleBtnRef.current && window.google) {
-        window.google.accounts.id.renderButton(googleBtnRef.current, {
-          theme: "filled_black",
-          size: "large",
-          shape: "rectangular",
-          width: googleBtnRef.current.offsetWidth || 350,
-          text: "signin_with",
-          logo_alignment: "center",
-        });
-      }
-    };
-
-    // Try immediately, then retry once the GSI script may have loaded
-    tryRender();
-    const timer = setTimeout(tryRender, 800);
-    return () => clearTimeout(timer);
-  }, []);
 
   // Inject styles once
   useEffect(() => {
@@ -282,9 +267,9 @@ export function LoginPage() {
           {/* Brand */}
           <div className="login-brand">
             <div className="login-icon">🎬</div>
-            <div className="login-title">CineBook</div>
+            <div className="login-title">BookMyScreen</div>
             <div className="login-subtitle">
-              Reserve your perfect seat — <br />any film, any row, any time.
+              Book your perfect seat<br />
             </div>
           </div>
 
@@ -300,8 +285,7 @@ export function LoginPage() {
             The fallback button shows if GSI hasn't loaded yet.
           */}
           <div className="login-google-wrap">
-            <div ref={googleBtnRef} style={{ width: "100%" }}>
-              {/* Fallback — replaced by Google's own button once GSI loads */}
+            <div style={{ width: "100%" }}>
               <button className="login-google-btn" onClick={loginWithGoogle}>
                 <svg className="login-google-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -329,8 +313,11 @@ export function LoginPage() {
           </div>
 
           <div className="login-footer">
-            By signing in you agree to our Terms of Service.<br />
-            We use Google sign-in — no password needed.
+            By signing in you agree to our 
+            <a href="#" className="login-footer-terms">
+              Terms of Service
+              </a>
+              .
           </div>
         </div>
       </div>
