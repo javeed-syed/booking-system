@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 
 from sqlalchemy import Column, String
-from extensions import Base
+from database import Base
 from uuid import uuid4
 
 class User(Base):

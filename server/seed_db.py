@@ -1,7 +1,6 @@
 import argparse
 
-from extensions import SessionLocal
-from models.init import init_db
+from database import init_db, SessionLocal
 from models.movie import Movie
 from data import movies_data
 

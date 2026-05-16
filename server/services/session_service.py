@@ -1,8 +1,6 @@
 import uuid
-import json
 from datetime import datetime, timedelta
-
-from extensions import get_redis
+from redis_ import get_redis
 import repositories.session_repo as session_repo
 
 def create_session(user_id, movie_id, seat_id):

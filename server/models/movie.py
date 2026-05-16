@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String
-from extensions import Base
+from database import Base
 from uuid import uuid4
 
 class Movie(Base):

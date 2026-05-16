@@ -1,6 +1,5 @@
 from models.booking import Booking
 
-
 def get_booked_seats(session, movie_id: str):
     rows = session.query(Booking).filter(
         Booking.movie_id == movie_id,

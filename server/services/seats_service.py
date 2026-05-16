@@ -1,6 +1,5 @@
-import json
-
-from extensions import get_db, get_redis
+from database import get_db
+from redis_ import get_redis
 # from repositories.producer_repo import produce_event_to_stream
 from repositories.seat_repo import get_movie_seats, movie_seats_exists, add_seat, create_lock_seat, update_lock_seat_confirm, update_lock_seat_release, validate_lock
 from repositories.booking_repo import create_booking, get_booked_seats
@@ -21,7 +20,7 @@ def get_all_seats(movie_id):
             for movie_id, data in movies_data.items():
 
                 seats = generate_all_seats(
-                    movie_id, data["rows"], data["seats_per_row"], booked_seats or {}
+                    data["rows"], data["seats_per_row"], booked_seats or {}
                 )
 
                 for seat_id, seat_data in seats.items():

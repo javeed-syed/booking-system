@@ -1,4 +1,4 @@
-def generate_all_seats(movie_id, rows, seats_per_row, booked_data):
+def generate_all_seats(rows, seats_per_row, booked_data):
     """
     booked_data = {
     "<movie_id>": {

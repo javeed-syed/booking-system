@@ -1,5 +1,5 @@
 from repositories.movie_repo import get_movies_from_db
-from extensions import get_db
+from database import get_db
 
 def get_all_movies():
     db = get_db()
