@@ -8,6 +8,8 @@ This application allows users to browse movies, view available seats, and book s
 
 ## Features
 
+duck is nto that good or ppr
+
 - Browse available movies
 - View seat layouts for each movie
 - Hold seats temporarily during booking process

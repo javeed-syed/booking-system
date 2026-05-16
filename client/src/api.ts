@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { Movie, SeatStatus, HoldResponse } from "./types";
+import type { Movie, SeatStatus, HoldResponse, CreateOrderResponse, VerifyPaymentResponse } from "./types";
 import type { AuthUser } from "./types";
 import { config } from "../env.config"
 
@@ -52,9 +52,9 @@ export const cinemaApi = {
       .then((r) => r.data);
   },
 
-  async confirmSeat(sessionId: string, userId: string): Promise<void> {
+  async confirmSeat(sessionId: string, userId: string, paymentId: string): Promise<void> {
     await client
-      .put(`/sessions/${sessionId}/confirm`, { user_id: userId });
+      .put(`/sessions/${sessionId}/confirm`, { user_id: userId, payment_id: paymentId });
     return undefined;
   },
 
@@ -63,4 +63,15 @@ export const cinemaApi = {
       .delete(`/sessions/${sessionId}`, { data: { user_id: userId } });
     return undefined;
   },
+};
+
+// ─── Payment API ───────────────────────────────────────────────────────────────
+export const paymentApi = {
+  async createOrder(amount: number, session_id: string): Promise<CreateOrderResponse> {
+    return client.post<CreateOrderResponse>("/payments/create-order", { amount, session_id }).then((r) => r.data);
+  },
+  
+  async verifyPayment(orderId: string, paymentId: string, signature: string): Promise<VerifyPaymentResponse> {
+    return client.post<VerifyPaymentResponse>("/payments/verify", { order_id: orderId, payment_id: paymentId, signature }).then((r) => r.data);
+  }
 };

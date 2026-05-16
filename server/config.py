@@ -27,3 +27,6 @@ APP_SECRET_KEY = config.get("APP_SECRET_KEY")
 BACKEND_URL = config.get("BACKEND_URL", "http://localhost:3000")
 FRONTEND_URL = config.get("FRONTEND_URL", "http://localhost:5173")
 ENV = config.get("ENV", "dev")
+
+RAZOR_PAY_API_KEY=config.get("RAZOR_PAY_API_KEY")
+RAZOR_PAY_API_SECRET=config.get("RAZOR_PAY_API_SECRET")

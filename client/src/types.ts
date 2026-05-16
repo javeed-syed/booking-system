@@ -40,3 +40,14 @@ export interface AuthUser {
   email: string;
   picture: string;
 }
+
+export interface CreateOrderResponse {
+  order_id: string;
+  amount: number;
+  receipt: string;
+}
+
+export interface VerifyPaymentResponse {
+  success: boolean;
+  message: string;
+}

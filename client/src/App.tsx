@@ -91,9 +91,10 @@ function BookingApp() {
       .catch((err: Error) => setStatus({ msg: err.message, type: "error" }));
   }
 
-  function confirmSeat(): void {
+  function confirmSeat(paymentId: string): void {
     if (!activeSession) return;
-    cinemaApi.confirmSeat(activeSession.sessionID, bookingUserID)
+
+    cinemaApi.confirmSeat(activeSession.sessionID, bookingUserID, paymentId)
       .then(() => { setActiveSession(null); fetchSeats(); setStatus({ msg: "Booking confirmed!", type: "success" }); })
       .catch((err: Error) => setStatus({ msg: err.message, type: "error" }));
   }

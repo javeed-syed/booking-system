@@ -37,11 +37,11 @@ def lock_seat(movie_id, seat_id, user_id):
     r = get_redis()
     return create_lock_seat(r, movie_id, seat_id, user_id)
 
-def confirm_seat(movie_id, seat_id, user_id):
+def confirm_seat(movie_id, seat_id, user_id, payment_id):
     r = get_redis()
     db = get_db()
     validate_lock(r, movie_id, seat_id, user_id)
-    create_booking(db, user_id, movie_id, [seat_id])
+    create_booking(db, user_id, movie_id, [seat_id], payment_id)
     update_lock_seat_confirm(r, movie_id, seat_id, user_id)
 
 def release_seat(movie_id, seat_id, user_id):

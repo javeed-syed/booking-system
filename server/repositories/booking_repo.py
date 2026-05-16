@@ -12,12 +12,13 @@ def get_booked_seats(session, movie_id: str):
         for row in rows for seat_id in row.seats
     }
 
-def create_booking(session, user_id: str, movie_id: str, seats: list):
+def create_booking(session, user_id: str, movie_id: str, seats: list, payment_id: str):
+    print(f"Creating booking for user {user_id} for movie {movie_id} with seats {seats} and payment_id {payment_id}")
     booking = Booking(
         user_id=user_id,
         movie_id=movie_id,
         seats=seats,
-        payment_id="dummy_payment_id",
+        payment_id=payment_id,
         status="confirmed"
     )
     session.add(booking)

@@ -1,4 +1,5 @@
 import type { Movie, ActiveSession, StatusMsg } from "../types";
+import Razorpay from "./Razorpay";
 import { Timer } from "./Timer";
 
 // Adjust to match your backend's hold duration
@@ -8,7 +9,7 @@ interface CheckoutSidebarProps {
   selectedMovie: Movie | null;
   activeSession: ActiveSession | null;
   status: StatusMsg | null;
-  onConfirm: () => void;
+  onConfirm: (paymentId: string) => void;
   onRelease: () => void;
   onExpire: () => void;
 }
@@ -90,9 +91,16 @@ export function CheckoutSidebar({
 
       {/* Actions */}
       <div className="cb-actions">
-        <button className="cb-btn cb-btn-primary" onClick={onConfirm}>
-          ✓ Confirm booking
-        </button>
+        <Razorpay
+        className="cb-btn cb-btn-primary"
+        order = {{
+            'amount': 30000,
+            'session_id': activeSession.sessionID
+        }}
+          onSuccess = {onConfirm}
+          buttonText = {"✓ Confirm booking"}
+        />
+        
         <button className="cb-btn cb-btn-ghost" onClick={onRelease}>
           Release seat
         </button>

@@ -1,14 +1,19 @@
 from flask import Flask, app, jsonify, request, redirect, make_response
 from flask_cors import CORS
+import razorpay
+from razorpay.errors import (
+    SignatureVerificationError
+)
 
 from extensions import init_app
 from services.session_service import create_session, get_session
 from services.seats_service import get_all_seats, lock_seat, confirm_seat, release_seat
 from services.movies_service import get_all_movies
 from models.init import init_db
-from config import BACKEND_URL, FRONTEND_URL, ENV, JWT_SECRET_KEY
+from config import BACKEND_URL, FRONTEND_URL, ENV, JWT_SECRET_KEY, RAZOR_PAY_API_KEY, RAZOR_PAY_API_SECRET
 from oauth import init_oauth
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt, get_jwt_identity
+from typing import Any
 
 app = Flask(__name__)
 CORS(
@@ -21,6 +26,8 @@ init_app(app)
 init_db()
 app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
 app.config["JWT_SECRET_KEY"] = JWT_SECRET_KEY
+
+razorpay_client:Any = razorpay.Client(auth=(RAZOR_PAY_API_KEY, RAZOR_PAY_API_SECRET))
 
 @app.route("/")
 def home():
@@ -114,6 +121,7 @@ def start_session(movie_id, seat_id):
 def confirm_seat_route(session_id):
     data = request.get_json()
     user_id = data.get("user_id")
+    payment_id = data.get("payment_id")
 
     session = get_session(user_id, session_id)
 
@@ -121,7 +129,7 @@ def confirm_seat_route(session_id):
         return jsonify({"message": "Session not found."}), 401
 
     confirm_seat(
-        session.get("movie_id"), session.get("seat_id"), session.get("user_id")
+        session.get("movie_id"), session.get("seat_id"), session.get("user_id"), payment_id
     )
 
     return jsonify({"success": True})
@@ -143,6 +151,54 @@ def delete_seat_route(session_id):
 
     return jsonify({"success": True})
 
+@app.route("/payments/create-order", methods=["POST"])
+def create_order():
+    data = request.get_json()
+    order_data = {
+        "amount": int(data["amount"]),
+        "currency": "INR",
+        "receipt": f"{data['session_id']}"
+    }
+
+    payment = razorpay_client.order.create(data=order_data)
+
+    print("Created order:", payment)
+    return jsonify({
+        "order_id": payment['id'],
+        "amount": payment['amount'],
+        "receipt": payment['receipt']
+    })
+
+@app.route("/payments/verify", methods=["POST"])
+def verify_order():
+    data = request.get_json()
+    order_data = {
+        'razorpay_order_id': data['order_id'],
+        'razorpay_payment_id': data['payment_id'],
+        'razorpay_signature': data['signature']
+    }
+    try:
+        razorpay_client.utility.verify_payment_signature(order_data)
+
+        return jsonify({
+            "success": True,
+            "message": "Payment verified"
+        }), 200
+
+    except SignatureVerificationError:
+
+        return jsonify({
+            "success": False,
+            "message": "Invalid signature"
+        }), 400
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    print("An error occurred:", str(e))
+    return jsonify({
+        "success": False,
+        "message": str(e)
+    }), 500
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=3000, debug=True)
